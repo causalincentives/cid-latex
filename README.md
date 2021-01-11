@@ -1,6 +1,10 @@
 ## About
 
+This is Latex package for drawing (causal) influence diagrams (CIDs) and labeling incentives, maintained by the [Causal Incentives Working Group](https://causalincentives.com).
+
 ## How to use
+
+See the [tutorial](https://causalincentives.github.io/cid-latex-package/CausalInfluenceDiagramLatexTutorial.html).
 
 ## Updating this package
 Before pushing an update to this package, please remember to:
