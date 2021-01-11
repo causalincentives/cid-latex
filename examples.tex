@@ -147,7 +147,7 @@
       \legendrow{value of information}{Value of Information}\\
       \legendrow{value of control}{Value of Control} \\
       \legendrow{response incentive}{Response Incentive}\\
-      \legendrow{feasible control incentive}{Feasible Control Incentive}\\
+      \legendrow{feasible control incentive}{Control Incentive}\\
     }
 
     \path (causal.west) edge[->] (causal.east);
@@ -272,6 +272,63 @@
   \voi{Gr}
   \ri{R}
   \ri<2>{S}
- \end{influence-diagram}
+\end{influence-diagram}
+
+
+\section{Putting it all together}
+
+\begin{influence-diagram}
+  
+  \node (S1) {$S_1$};
+  \node (S2) [right = 2 of S1] {$S_2$};
+  \node (S3) [right = 2 of S2] {$S_3$};
+  
+  \node (R1) [below = of S1, utility] {$R_1$};
+  \node (R2) [below = of S2, utility] {$R_2$};
+  \node (R3) [below = of S3, utility] {$R_3$};
+
+  \node (A1) at ($(R1)!0.5!(R2)$) [decision] {$A_1$};
+  \node (A2) at ($(R2)!0.5!(R3)$) [decision] {$A_2$};
+
+  \node (thetaR) [below = of R1] {$\Theta_R$};
+
+  \edge {S1, thetaR} {R1};
+  \edge {S2, thetaR} {R2};
+  \edge {S3}         {R3};
+
+  \edge {A1, S1} {S2};
+  \edge {A2, S2} {S3};
+
+  \edge[information] {S1, R1} {A1};
+  \edge[information] {S2, R2} {A2};
+
+  \path (thetaR) edge[->, bend right=10] (R3);
+
+  \node (help) [minimum size=0mm, node distance=2mm, below left = of R1, draw=none] {};
+
+  \draw[information]
+  (S1) edge[ in=135, out=-120] (help.center)
+  (help.center) edge[->, out=-45, in=-150] (A2);
+
+  \fci{S2}
+  \fci{S3}
+  \ri{thetaR}
+
+  \cidlegend[right=of S3.north east, anchor=north west]{
+    \legendrow{}{chance node} \\
+    \legendrow{decision}{decision node}\\
+    \legendrow{utility}{utility node}\\
+    \legendrow[causal]{draw=none}{causal link} \\
+    \legendrow[information]{draw=none}{information link} \\
+    \legendrow{response incentive}{Response Incentive}\\
+    \legendrow{feasible control incentive}{Control Incentive}\\
+  }
+
+  \path (causal.west) edge[->] (causal.east);
+  \path (information.west) edge[->, information] (information.east);
+
+    
+\end{influence-diagram}
+
 
 \end{document}
