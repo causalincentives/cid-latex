@@ -1,0 +1,455 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Latex stylesheet for influence diagrams
+%
+% Version: 2021-01-11
+%
+% Copyright 2020 Tom Everitt
+%
+% Licensed under the Apache License, Version 2.0 (the "License");
+% you may not use this file except in compliance with the License.
+% You may obtain a copy of the License at
+%
+%     http://www.apache.org/licenses/LICENSE-2.0
+%
+% Unless required by applicable law or agreed to in writing, software
+% distributed under the License is distributed on an "AS IS" BASIS,
+% WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+% See the License for the specific language governing permissions and
+% limitations under the License.
+%
+%
+% Before pushing an update, please remember to:
+% 1. Make sure that file examples.tex compiles without error, and produces a PDF
+%    similar to examples.pdf
+% 2. Update the version number with today's date. If it is the second update for
+%    the same day, add .2 to the date (e.g. 2021-01-11.2), and then .3 and so on.
+%
+
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{my/cid}[2019/08/16 cid]
+
+\newif\if@numberedmacid\@numberedmacidfalse
+\DeclareOption{numberedmacid}{
+  \@numberedmacidtrue
+}
+
+\newif\if@compact\@compactfalse
+\DeclareOption{compact}{
+  \@compacttrue
+}
+
+\newif\if@rectangularnodes\@rectangularnodesfalse
+\DeclareOption{rectangularnodes}{
+  \@rectangularnodestrue
+}
+
+\newif\if@thin\@thinfalse
+\DeclareOption{thin}{
+  \@thintrue
+}
+
+\newif\if@decisionutilitycolor\@decisionutilitycolorfalse
+\DeclareOption{decisionutilitycolor}{
+  \@decisionutilitycolortrue
+}
+
+\ProcessOptions\relax
+
+\RequirePackage{xcolor}
+\colorlet{good-color}{green}
+\colorlet{bad-color}{red}
+\colorlet{player1-color}{orange!30}
+\colorlet{player2-color}{green!30}
+\colorlet{common-color}{brown!20}
+
+\if@decisionutilitycolor
+\colorlet{decision-color}{blue!15}
+\colorlet{utility-color}{yellow!50}
+\else
+\colorlet{decision-color}{white}
+\colorlet{utility-color}{white}
+\fi
+
+\colorlet{voi-color}{blue}
+\colorlet{voc-color}{orange}
+\colorlet{fci-color}{red}
+\colorlet{ri-color}{green}
+
+\RequirePackage{xparse}
+
+\RequirePackage{tikz}
+\usetikzlibrary{angles}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{arrows}
+\usetikzlibrary{bayesnet}
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations}
+\usetikzlibrary{fit}
+\usetikzlibrary{positioning}
+\usetikzlibrary{quotes}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{shapes.misc}
+\usetikzlibrary{shapes}
+
+\tikzset{
+  phantom/.style = {minimum size=0mm, inner sep=0mm, draw=none},
+  % highlights
+  downplay/.style = {color=gray, thin},
+  highlight/.style = {color=red, thick},
+  bad/.style = {color=bad-color},
+  good/.style = {color=good-color},
+  problematic/.style = {red, thick},
+  problematic information/.style = {information, red, ultra thick},
+  % node types
+  intervened/.style = {double},
+  chamf/.style = {chamfered rectangle,chamfered rectangle xsep=#1, chamfered rectangle ysep=#1, rounded corners=0},
+  chamf/.default = {3pt},
+  uchamf/.style = {chamf={#1}, inner sep=0},
+  uchamf/.default = {3pt},
+  utilityc/.style  = {fill=utility-color, chamf=#1},
+  utilityd/.style  = {fill=utility-color, diamond, rounded corners=0},
+  decision/.style = {fill=decision-color,rectangle,rounded corners=0},
+  policy/.style = {dashed},
+  exogenous/.style = {draw=gray},
+  information/.style = {thick,dotted,},
+  % incentives
+  incentive/.style={draw, dashed, very thick},
+  value of control/.style = {incentive, voc-color},
+  response incentive/.style = {incentive, ri-color},
+  value of information/.style = {incentive, voi-color},
+  feasible control incentive/.style = {incentive, fci-color},
+}
+
+\if@thin
+\tikzset{
+  every picture/.style={line width=0.1pt},
+  bad/.append style = {line width=0.3pt,},
+  good/.append style = {line width=0.4pt},
+}
+\fi
+
+\if@numberedmacid
+\tikzset{
+  player1/.append style = {label={[label distance=-2mm]#1:1}},
+  player1/.default = {-20},
+  player2/.append style = {label={[label distance=-2mm]#1:2}},
+  player2/.default = {-20},
+  common/.style = {fill=common-color},
+}
+\else
+\tikzset{
+  player1/.style = {fill=player1-color},
+  player2/.style = {fill=player2-color},
+  common/.style = {fill=common-color},
+}
+\fi
+
+% vertically centered vdots
+%\makeatletter
+\DeclareRobustCommand{\rvdots}{%
+  \vbox{
+    \baselineskip4\p@\lineskiplimit\z@
+    \kern-\p@
+    \hbox{.}\hbox{.}\hbox{.}
+  }}
+%\makeatother
+
+\newcommand{\pathto}{\dashrightarrow}
+\newcommand{\pathfrom}{\dashleftarrow}
+\newcommand{\upathto}{\,\,\hbox{-\! -}\,\,}
+
+\newcommand{\pa}{\textbf{pa}}  % parents in a causal graph
+\newcommand{\Pa}{\textbf{Pa}}  % parents in a causal graph
+\newcommand{\fa}{\textbf{fa}}  % family of node in causal graph (Pa(D) U {D})
+\newcommand{\Fa}{\textbf{Fa}}  % family of node in causal graph (Pa(D) U {D})
+
+\newcommand{\asc}{\mathrm{asc}}   % ascendants in a causal graph
+\newcommand{\desc}{\mathrm{desc}} % descendants in a causal graph
+\newcommand{\anc}{\mathrm{anc}} % ancestors in a causal graph
+
+\newcommand{\dsep}{\perp}
+\newcommand{\Dsep}[1][\sD]{\perp_{#1}}
+
+\newcommand{\utilsum}{\mathcal{U}}
+
+\NewDocumentCommand{\esep}{ommm}{
+  \IfNoValueTF{#1}{
+    #2 \perp^{\!\!\EE} #3 \mid #4
+  }{
+    (\esep{#2}{#3}{#4})_{#1}
+  }
+}
+
+\newcommand*{\dom}{\textit{dom}}
+
+% Length for creating "text-height" nodes
+\newlength{\ucht}
+\AtBeginDocument{\settoheight{\ucht}{A}}
+
+% Optional argument lets you name the left-most node
+\newcommand{\legendrow}[3][]{
+  \node (#1) [draw, circle, #2] {}; \&
+  \node [draw=none, rectangle] {#3}; \\
+}
+
+% The o-option, specified in [], gives node arguments to the matrix node.
+% It can be used to position the legend with right = of Y.
+% The d-option, specified in <>, specifies a node label.
+% It can be used to position matrix at (node).
+\NewDocumentCommand\cidlegend{O{}d<>m}{
+  \IfNoValueTF{#2}{
+    \if@compact
+    \small
+    \begin{scope}[
+      every node/.style = {align=left, minimum size = 4mm, circle, node distance=5mm}]
+      \matrix[ampersand replacement=\&, rectangle, draw, #1,
+      column sep=1mm,
+      row sep=0.1mm,
+      nodes=
+      {%minimum height=3em,
+        % draw,
+        % text height=1.5ex,
+        % text depth=.25ex,
+        anchor=west}
+      ] {
+        #3
+      };
+    \end{scope}
+    \else
+    \small
+    \begin{scope}[
+      every node/.style = {align=left, minimum size = 4mm, circle, node distance=1cm}]
+      \matrix[ampersand replacement=\&, rectangle, draw, #1,
+      column sep=1mm,
+      row sep=0.1mm,
+      nodes=
+      {%minimum height=3em,
+        % draw,
+        % text height=1.5ex,
+        % text depth=.25ex,
+        anchor=west}
+      ] {
+        #3
+      };
+    \end{scope}
+    \fi
+  }{
+    \if@compact
+    \small
+    \begin{scope}[
+      every node/.style = {align=left, minimum size = 4mm, circle}]
+      \matrix[ampersand replacement=\&, rectangle, draw, #1,
+      column sep=1mm,
+      row sep=0.1mm,
+      nodes=
+      {%minimum height=3em,
+        % draw,
+        % text height=1.5ex,
+        % text depth=.25ex,
+        anchor=west}
+      ] at (#2) {
+        #3
+      };
+    \end{scope}
+    \else
+    \small
+    \begin{scope}[
+      every node/.style = {align=left, minimum size = 4mm, circle}]
+      \matrix[ampersand replacement=\&, rectangle, draw, #1,
+      column sep=1mm,
+      row sep=0.1mm,
+      nodes=
+      {%minimum height=3em,
+        % draw,
+        % text height=1.5ex,
+        % text depth=.25ex,
+        anchor=west}
+      ] at (#2) {
+        #3
+      };
+    \end{scope}
+    \fi
+    }
+  }
+  
+\newcommand{\setdiamondutility}{
+  \tikzset{
+    utility/.style  = {utilityd},
+  }
+}
+
+\newcommand{\setchamferedutility}{
+  \tikzset{
+    utility/.style  = {utilityc=##1},
+  }
+}
+
+\newlength{\minimum@size}
+\newcommand{\setminimumsize}[1]{
+  \setlength{\minimum@size}{#1}
+}
+\newlength{\inner@sep}
+\newcommand{\setinnersep}[1]{
+  \setlength{\inner@sep}{#1}
+}
+\newlength{\@margin}
+\newcommand{\setmargin}[1]{
+  \setlength{\@margin}{#1}
+}
+
+\newcommand{\setcompactsize}[1][]{
+  \tikzset{>={Latex[length=2mm,width=1.5mm]}}
+  \setminimumsize{5mm}
+  \setinnersep{0.5mm}
+  \setmargin{0.5mm}
+  \tikzset{
+    node distance=0.3cm and 0.4cm,
+    every node/.append style={minimum size=\minimum@size, inner sep=\inner@sep},
+    chamf/.default = {2pt},
+    #1,
+  }
+  \small
+}
+
+\newcommand{\setnormalsize}[1][]{
+  \tikzset{>={Latex[length=2.5mm,width=2mm]}}
+  \setminimumsize{8mm}
+  \setinnersep{0.5mm}
+  \setmargin{1mm}
+  \tikzset{
+    node distance=0.7cm,
+    every node/.append style={minimum size=\minimum@size, inner sep=\inner@sep},
+    chamf/.default = {3pt},
+    #1,
+    }
+}
+
+\newcommand{\setcircularnodes}[1][]{
+  \setdiamondutility
+  \tikzset{
+    every node/.append style={circle},
+    #1,
+  }
+  \renewcommand{\incentive}[3]{
+    \node at (##1) [##2,minimum size=\minimum@size+##3\extra@sep, inner sep=0\inner@sep] {\textcolor{black}{\labeltextof{##1}}};
+  }
+}
+
+\newcommand{\setrectangularnodes}[1][]{
+  \setchamferedutility
+  \tikzset{
+    every node/.append style={rectangle, rounded corners=5},
+    #1,
+  }
+  \renewcommand{\incentive}[3]{
+  \node[inner sep =  ##3\inner@sep, fit = (##1), ##2] {};}
+}
+
+
+\newenvironment{influence-diagram}[1][]%
+{
+  \begin{tikzpicture}
+  \tikzset{
+    every node/.style = {draw, align=center}
+  }
+  \tikzset{>={Latex[length=2.5mm,width=2mm]}}
+    \if@compact
+    \setcompactsize
+    \else
+    \setnormalsize
+    \fi
+    \if@rectangularnodes
+    \setrectangularnodes
+    \else
+    \setcircularnodes
+    \fi
+    \tikzset{
+      #1
+    }
+  }{
+    \end{tikzpicture}
+  }
+
+
+% function to extract the text inside a node
+\protected\def\tikz@fig@main#1{%
+  \expandafter\gdef\csname labeltextof@\tikz@fig@name\endcsname{#1}%
+  \iftikz@node@is@pic%
+    \tikz@node@is@picfalse%
+    \tikz@subpicture@handle{#1}%
+  \else%
+    \tikz@@fig@main#1\egroup%
+    \fi}
+
+\newcommand\labeltextof[1]{\csname labeltextof@#1\endcsname}
+
+\newlength{\extra@sep}
+\setlength{\extra@sep}{1mm}
+\newcommand{\incentive}[3]{}  % Will be set in \setrectangularnodes and \setcircularnodes
+
+\NewDocumentCommand\fci{O{}D<>{1}m}{\incentive{#3}{feasible control incentive,#1}{#2}}
+\NewDocumentCommand\ri{O{}D<>{1}m}{\incentive{#3}{response incentive,#1}{#2}}
+\NewDocumentCommand\voi{O{}D<>{1}m}{\incentive{#3}{value of information,#1}{#2}}
+\NewDocumentCommand\voc{O{}D<>{1}m}{\incentive{#3}{value of control,#1}{#2}}
+
+
+\endinput
+
+%%%%%%%%%%%%%%%%%
+%
+% Example usage:
+%
+
+% \documentclass{scrartcl}
+
+% \usepackage{aixi/influence-diagrams}
+
+% \begin{document}
+
+% \begin{center}
+% \begin{influence-diagram}
+
+%   \node (S1) {$S_1$};
+%   \node (S2) [right = 2 of S1] {$S_2$};
+%   \node (S3) [right = 2 of S2] {$S_3$};
+  
+%   \node (R1) [below = of S1, utility] {$R_1$};
+%   \node (R2) [below = of S2, utility] {$R_2$};
+%   \node (R3) [below = of S3, utility] {$R_3$};
+
+%   \node (A1) at ($(R1)!0.5!(R2)$) [decision] {$A_1$};
+%   \node (A2) at ($(R2)!0.5!(R3)$) [decision] {$A_2$};
+
+%   \node (thetaT) [above = of S1] {$\Theta_T$};
+%   \node (thetaR) [below = of R1] {$\Theta_R$};
+
+%   % Edges (note that multiple labels can be given to each argument)
+%   \edge {S1, thetaR} {R1};
+%   \edge {S2, thetaR} {R2};
+%   \edge {S3}         {R3};
+
+%   \edge {thetaT}         {S1};
+%   \edge {thetaT, A1, S1} {S2};
+%   \edge {thetaT, A2, S2} {S3};
+
+%   % Dotted information edges
+%   \edge[information] {S1, R1} {A1};
+%   \edge[information] {S2, R2} {A2};
+
+%   % A slightly bent edge, using a different syntax
+%   \path (thetaR) edge[->, bend right=10] (R3);
+
+%   % A bent information edge, using an invisible helper node
+%   \node (help) [minimum size=0mm, node distance=2mm, 
+%                 below left = of R1, draw=none] {};
+%   \draw[information]
+%     (S1) edge[ in=135, out=-120] (help.center)
+%     (help.center) edge[->, out=-45, in=-150] (A2);
+
+% \end{influence-diagram}
+% \end{center}
+
+
+% \end{document}
