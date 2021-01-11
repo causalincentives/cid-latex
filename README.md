@@ -4,7 +4,7 @@ This is Latex package for drawing (causal) influence diagrams (CIDs) and labelin
 
 It can be used to draw diagrams such as this one:
 
-![example-figure.png](./example-figure.png)
+![example-diagram.png](./example-diagram.png)
 
 
 ## How to use
