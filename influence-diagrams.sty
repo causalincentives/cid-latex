@@ -2,7 +2,7 @@
 %
 % Latex stylesheet for influence diagrams
 %
-% Version: 2021-01-11
+% Version: 2021-01-11.2
 %
 % Copyright 2020 Tom Everitt
 %
@@ -28,7 +28,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{my/cid}[2019/08/16 cid]
+% \ProvidesPackage{my/cid}[2019/08/16 cid]
 
 \newif\if@numberedmacid\@numberedmacidfalse
 \DeclareOption{numberedmacid}{
@@ -57,11 +57,20 @@
 
 \ProcessOptions\relax
 
+% Node colours
+\RequirePackage{xcolor}
 \RequirePackage{xcolor}
 \colorlet{good-color}{green}
 \colorlet{bad-color}{red}
-\colorlet{player1-color}{orange!30}
-\colorlet{player2-color}{green!30}
+% Primary colours
+\colorlet{player1-color}{red!30}
+\colorlet{player2-color}{blue!30}
+\colorlet{player3-color}{yellow!30}
+% Secondary colours
+\colorlet{player4-color}{green!30}
+\colorlet{player5-color}{purple!30}
+\colorlet{player6-color}{orange!30}
+% Mixed colour
 \colorlet{common-color}{brown!20}
 
 \if@decisionutilitycolor
@@ -111,6 +120,8 @@
   utilityc/.style  = {fill=utility-color, chamf=#1},
   utilityd/.style  = {fill=utility-color, diamond, rounded corners=0},
   decision/.style = {fill=decision-color,rectangle,rounded corners=0},
+  relevanceb/.style = {rectangle, fill=black, text=white, rounded corners=5},
+  relevancew/.style = {rectangle, rounded corners=5}
   policy/.style = {dashed},
   exogenous/.style = {draw=gray},
   information/.style = {thick,dotted,},

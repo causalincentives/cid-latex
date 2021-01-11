@@ -2,7 +2,7 @@
 %
 % Latex stylesheet for influence diagrams
 %
-% Version: 2021-01-11
+% Version: 2021-01-11.2
 %
 % Copyright 2020 Tom Everitt
 %
@@ -187,6 +187,7 @@
 
 \section{Multi-agent CIDs}
 
+% MACID
 \begin{influence-diagram}
   \node (help) [draw=none] {};
   \node (P1) [above = of help, decision, player1] {$D_1$};
@@ -200,9 +201,15 @@
   \edge {P1,P2} {U1};
   \edge {C,P1,P2} {U2};
 
+% Relevance graph
 \end{influence-diagram}
+\begin{influence-diagram}
+  \node (D1) [relevanceb] {$D_1$};
+  \node (D2) [below = of D1, relevanceb] {$D_2$};
 
-
+  \path (D1) edge[->, bend right=15] (D2);
+  \path (D2) edge[->, bend right=15] (D1);
+\end{influence-diagram}
 
 \section{Rectangular}
 
