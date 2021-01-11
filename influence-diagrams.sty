@@ -2,7 +2,7 @@
 %
 % Latex stylesheet for influence diagrams
 %
-% Version: 2021-01-11.2
+% Version: 2021-01-11.3
 %
 % Copyright 2020 Tom Everitt
 %
@@ -147,12 +147,24 @@
   player1/.default = {-20},
   player2/.append style = {label={[label distance=-2mm]#1:2}},
   player2/.default = {-20},
+  player3/.append style = {label={[label distance=-2mm]#1:3}},
+  player3/.default = {-20},
+  player4/.append style = {label={[label distance=-2mm]#1:4}},
+  player4/.default = {-20},
+  player5/.append style = {label={[label distance=-2mm]#1:5}},
+  player5/.default = {-20},
+  player6/.append style = {label={[label distance=-2mm]#1:6}},
+  player6/.default = {-20},
   common/.style = {fill=common-color},
 }
 \else
 \tikzset{
   player1/.style = {fill=player1-color},
   player2/.style = {fill=player2-color},
+  player3/.style = {fill=player3-color},
+  player4/.style = {fill=player4-color},
+  player5/.style = {fill=player5-color},
+  player6/.style = {fill=player6-color},
   common/.style = {fill=common-color},
 }
 \fi
