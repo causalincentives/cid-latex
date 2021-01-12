@@ -9,7 +9,7 @@ It can be used to draw diagrams such as this one:
 
 ## How to use
 
-See the [tutorial](https://causalincentives.github.io/cid-latex-package/CausalInfluenceDiagramLatexTutorial.html).
+See the [tutorial](https://causalincentives.github.io/cid-latex/CausalInfluenceDiagramLatexTutorial.html).
 
 ## Updating this package
 Before pushing an update to this package, please remember to:
