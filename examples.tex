@@ -189,6 +189,7 @@
 
 % MACID
 \begin{influence-diagram}
+
   \node (help) [draw=none] {};
   \node (P1) [above = of help, decision, player1] {$D_1$};
   \node (P2) [below = of help, decision, player2] {$D_2$};
@@ -200,15 +201,16 @@
   \edge[information] {P1} {P2};
   \edge {P1,P2} {U1};
   \edge {C,P1,P2} {U2};
-
-% Relevance graph
 \end{influence-diagram}
+% Relevance graph
 \begin{influence-diagram}
+
   \node (D1) [relevanceb] {$D_1$};
   \node (D2) [below = of D1, relevanceb] {$D_2$};
 
   \path (D1) edge[->, bend right=15] (D2);
   \path (D2) edge[->, bend right=15] (D1);
+
 \end{influence-diagram}
 
 \section{Rectangular}

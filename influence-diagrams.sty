@@ -55,6 +55,11 @@
   \@decisionutilitycolortrue
 }
 
+\newif\if@ongrid\@ongridfalse
+\DeclareOption{ongrid}{
+  \@ongridtrue
+}
+
 \ProcessOptions\relax
 
 % Node colours
@@ -138,6 +143,12 @@
   every picture/.style={line width=0.1pt},
   bad/.append style = {line width=0.3pt,},
   good/.append style = {line width=0.4pt},
+}
+\fi
+
+\if@ongrid
+\tikzset{
+  every node/.append style = {on grid}
 }
 \fi
 
@@ -370,6 +381,13 @@
   \node[inner sep =  ##3\inner@sep, fit = (##1), ##2] {};}
 }
 
+\newcommand{\setongrid}[1][]{
+  \tikzset{
+    every node/.append style={on grid},
+    node distance = 1.4cm and 1.4cm
+    #1,
+  }
+}
 
 \newenvironment{influence-diagram}[1][]%
 {
@@ -387,6 +405,9 @@
     \setrectangularnodes
     \else
     \setcircularnodes
+    \fi
+    \if@ongrid
+    \setongrid
     \fi
     \tikzset{
       #1
